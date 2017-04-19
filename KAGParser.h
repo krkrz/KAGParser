@@ -13,7 +13,9 @@
 #define KAGParserH
 //---------------------------------------------------------------------------
 
+#ifdef _WIN32
 #include <windows.h>
+#endif
 #include "tp_stub.h"
 #include "tjsHashSearch.h"
 #include <vector>
@@ -39,7 +41,7 @@ class tTVPCharHolder
 	tjs_char *Buffer;
 	size_t BufferSize;
 public:
-	tTVPCharHolder() : Buffer(NULL), BufferSize(0)
+	tTVPCharHolder() : Buffer(nullptr), BufferSize(0)
 	{
 	}
 	~tTVPCharHolder()
@@ -47,14 +49,14 @@ public:
 		Clear();
 	}
 
-	tTVPCharHolder(const tTVPCharHolder &ref) : Buffer(NULL), BufferSize(0)
+	tTVPCharHolder(const tTVPCharHolder &ref) : Buffer(nullptr), BufferSize(0)
 	{
 		operator =(ref);
 	}
 
 	void Clear()
 	{
-		if(Buffer) delete [] Buffer, Buffer = NULL;
+		if(Buffer) delete [] Buffer, Buffer = nullptr;
 		BufferSize = 0;
 	}
 

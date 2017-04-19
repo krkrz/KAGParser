@@ -23,9 +23,9 @@
   acquire speed in compensation for ability of customizing.
 */
 //---------------------------------------------------------------------------
-#define TJS_strchr			wcschr
-#define TJS_strcmp			wcscmp
-#define TJS_strncpy			wcsncpy_s
+//#define TJS_strchr			wcschr
+//#define TJS_strcmp			wcscmp
+//#define TJS_strncpy			wcsncpy_s
 
 const tjs_char* TVPKAGNoLine = TJS_W("読み込もうとしたシナリオファイル %1 は空です");
 const tjs_char* TVPKAGCannotOmmitFirstLabelName = TJS_W("シナリオファイルの最初のラベル名は省略できません");
@@ -1292,7 +1292,7 @@ void tTJSNI_KAGParser::PushCallStack()
 	FindNearestLabel(CurLine, labelline, labelname);
 	if(labelline < 0) labelline = 0;
 
-	const wchar_t *curline_content;
+	const tjs_char *curline_content;
 	if(Lines && CurLine < LineCount)
 		curline_content = Lines[CurLine].Start;
 	else
@@ -1865,7 +1865,7 @@ parse_start:
 
 							tjs_char *d = newbuf.AllocBuffer(finallen + 1);
 
-							TJS_strncpy(d, finallen + 1, CurLineStr, tagstartpos);
+							TJS_strncpy(d, CurLineStr, tagstartpos);
 							d += tagstartpos;
 
 							// escape '['
@@ -1907,7 +1907,7 @@ parse_start:
 							ttstr newbuf;
 							tjs_char *d = newbuf.AllocBuffer(finallen + 1);
 
-							TJS_strncpy(d, finallen + 1, CurLineStr, tagstartpos);
+							TJS_strncpy(d, CurLineStr, tagstartpos);
 							d += tagstartpos;
 							TJS_strcpy(d, macrocontent.c_str());
 							d += maclen;

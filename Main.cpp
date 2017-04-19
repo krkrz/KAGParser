@@ -1,14 +1,28 @@
+
+
+#ifdef _WIN32
 #include <windows.h>
+#endif
 #include "tp_stub.h"
+
+#ifdef _WIN32
+#define DLL_EXPORT __declspec(dllexport)
+#define STDCALL __stdcall
+#else
+typedef tjs_error HRESULT;
+#define DLL_EXPORT
+#endif
 #include "KAGParser.h"
 
 //---------------------------------------------------------------------------
+#ifdef _WIN32
 int WINAPI DllEntryPoint(HINSTANCE hinst, unsigned long reason, void* lpReserved) {
 	return 1;
 }
+#endif
 //---------------------------------------------------------------------------
 static tjs_int GlobalRefCountAtInit = 0;
-extern "C" __declspec(dllexport) HRESULT _stdcall V2Link(iTVPFunctionExporter *exporter)
+extern "C" DLL_EXPORT HRESULT STDCALL V2Link(iTVPFunctionExporter *exporter)
 {
 	// スタブの初期化(必ず記述する)
 	TVPInitImportStub(exporter);
@@ -23,7 +37,7 @@ extern "C" __declspec(dllexport) HRESULT _stdcall V2Link(iTVPFunctionExporter *e
 		iTJSDispatch2 * tjsclass = TVPCreateNativeClass_KAGParser();
 		val = tTJSVariant(tjsclass);
 		tjsclass->Release();
-		global->PropSet( TJS_MEMBERENSURE, TJS_W("KAGParser"), NULL, &val, global );
+		global->PropSet( TJS_MEMBERENSURE, TJS_W("KAGParser"), nullptr, &val, global );
 		//-----------------------------------------------------------------------
 		
 	}
@@ -45,10 +59,10 @@ extern "C" __declspec(dllexport) HRESULT _stdcall V2Link(iTVPFunctionExporter *e
 	// そうなってなければ、どこか別のところで関数などが参照されていて、
 	// プラグインは解放できないと言うことになる。
 
-	return S_OK;
+	return TJS_S_OK;
 }
 //---------------------------------------------------------------------------
-extern "C" __declspec(dllexport) HRESULT _stdcall V2Unlink()
+extern "C" DLL_EXPORT HRESULT STDCALL V2Unlink()
 {
 	// 吉里吉里側から、プラグインを解放しようとするときに呼ばれる関数。
 
@@ -56,7 +70,7 @@ extern "C" __declspec(dllexport) HRESULT _stdcall V2Unlink()
 	// この時点で E_FAIL を返すようにする。
 	// ここでは、TVPPluginGlobalRefCount が GlobalRefCountAtInit よりも
 	// 大きくなっていれば失敗ということにする。
-	if(TVPPluginGlobalRefCount > GlobalRefCountAtInit) return E_FAIL;
+	if(TVPPluginGlobalRefCount > GlobalRefCountAtInit) return TJS_E_FAIL;
 		// E_FAIL が帰ると、Plugins.unlink メソッドは偽を返す
 
 	/*
@@ -79,7 +93,7 @@ extern "C" __declspec(dllexport) HRESULT _stdcall V2Unlink()
 		// global は NULL になり得るので global が NULL でない
 		// ことをチェックする
 
-		global->DeleteMember( 0, TJS_W("KAGParser"), NULL, global );
+		global->DeleteMember( 0, TJS_W("KAGParser"), nullptr, global );
 	}
 
 	// - global を Release する
@@ -88,6 +102,6 @@ extern "C" __declspec(dllexport) HRESULT _stdcall V2Unlink()
 	// スタブの使用終了(必ず記述する)
 	TVPUninitImportStub();
 
-	return S_OK;
+	return TJS_S_OK;
 }
 //---------------------------------------------------------------------------
