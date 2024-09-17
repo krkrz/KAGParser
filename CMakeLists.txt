@@ -1,18 +1,24 @@
+cmake_minimum_required(VERSION 3.16)
 
-cmake_minimum_required(VERSION 3.4.1)
+# UTF-8 source
+add_compile_options("$<$<AND:$<C_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:C>>:/utf-8>")
+add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CXX>>:/utf-8>")
+add_compile_options("$<$<AND:$<CXX_COMPILER_ID:MSVC>,$<COMPILE_LANGUAGE:CXX>>:/Zc:__cplusplus>")
 
-set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/version_script.map -Wl,--strip-debug -Wl,--discard-all" )
+set(PROJECT_NAME kagparser)
+set(PROJECT_VERSION 1.00)
 
-include_directories( ./
-             ../)
+project(${PROJECT_NAME} VERSION ${PROJECT_VERSION})
 
-add_library( kagparser
+if(NOT TARGET tp_stub)
+add_subdirectory(../tp_stub ${CMAKE_CURRENT_BINARY_DIR}/tp_stub)
+endif()
 
-             SHARED
-
+add_library(${PROJECT_NAME} SHARED
              Main.cpp
              KAGParser.cpp
-             ../tp_stub.cpp)
+)
 
-target_link_libraries( kagparser )
-
+target_link_libraries(${PROJECT_NAME} PUBLIC
+    tp_stub
+)
